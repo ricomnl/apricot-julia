@@ -2,14 +2,24 @@ using BenchmarkTools
 using Distributed
 using TimerOutputs
 using Tullio
+using LoopVectorization
 
 X = rand(54, 581012)*100;
 
+# function get_gains!(X, current_values, idxs, gains)
+#     Threads.@threads for i in eachindex(idxs)
+#         s = 0.0
+#         for j in eachindex(current_values)
+#             @inbounds s += @fastmath sqrt(current_values[j] + X[j, idxs[i]])
+#         end
+#         gains[i] = s
+#     end
+# end;
 function get_gains!(X, current_values, idxs, gains)
-    Threads.@threads for i in eachindex(idxs)
+    @tturbo for i in eachindex(idxs)
         s = 0.0
         for j in eachindex(current_values)
-            @inbounds s += @fastmath sqrt(current_values[j] + X[j, idxs[i]])
+            s += sqrt(current_values[j] + X[j, idxs[i]])
         end
         gains[i] = s
     end
