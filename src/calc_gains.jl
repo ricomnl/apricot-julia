@@ -1,6 +1,7 @@
 using BenchmarkTools
 using Distributed
 using TimerOutputs
+using Tullio
 
 X = rand(54, 581012)*100;
 
@@ -23,7 +24,7 @@ end;
 
 @btime begin
     d, n = size(X);
-    idxs = 1:n |> collect
+    idxs = collect(1:n);
 
     current_values = zeros(Float64, d)
     current_concave_values = sqrt.(current_values)
